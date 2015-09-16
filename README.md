@@ -10,7 +10,9 @@ you can download this plugin from RTF project(https://github.com/medcl/elasticse
     --------------------------------------------------
     | Pinyin4j   Analysis Plugin    | ElasticSearch  |
     --------------------------------------------------
-    | master                        | 1.0.0 -> master|
+    | master                        | 1.6.0 -> master|
+    --------------------------------------------------
+    | 1.3.0                         | 1.6.0          |
     --------------------------------------------------
     | 1.2.2                         | 1.0.0          |
     --------------------------------------------------
@@ -34,8 +36,8 @@ curl -XPUT http://localhost:9200/medcl/ -d'
             "analyzer" : {
                 "pinyin_analyzer" : {
                     "tokenizer" : "my_pinyin",
-                    "filter" : ["standard"]
-                }
+                    "filter" : "word_delimiter
+]                }
             },
             "tokenizer" : {
                 "my_pinyin" : {
@@ -91,15 +93,15 @@ curl -XPUT http://localhost:9200/medcl/_settings -d'
         "analysis" : {
             "analyzer" : {
                 "pinyin_analyzer" : {
-                    "tokenizer" : ["my_pinyin"],
-                    "filter" : ["standard","nGram"]
+                    "tokenizer" : "my_pinyin",
+                    "filter" : ["word_delimiter","nGram"]
                 }
             },
             "tokenizer" : {
                 "my_pinyin" : {
                     "type" : "pinyin",
                     "first_letter" : "prefix",
-                    "padding_char" : ""
+                    "padding_char" : " "
                 }
             }
         }
@@ -159,7 +161,7 @@ curl -XPUT http://localhost:9200/medcl1/ -d'
             "analyzer" : {
                 "user_name_analyzer" : {
                     "tokenizer" : "whitespace",
-                    "filter" : ["standard","pinyin_filter"]
+                    "filter" : "pinyin_filter"
                 }
             },
             "filter" : {
