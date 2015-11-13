@@ -19,7 +19,7 @@ public class PinyinTokenizerFactory extends AbstractTokenizerFactory {
     public PinyinTokenizerFactory(Index index, @IndexSettings Settings indexSettings, @Assisted String name, @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
          first_letter = settings.get("first_letter", "none");
-         padding_char = settings.get("padding_char", "");
+         padding_char = settings.get("padding_char", " ");
     }
 
     @Override

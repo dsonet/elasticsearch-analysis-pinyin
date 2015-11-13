@@ -1,11 +1,7 @@
 package org.elasticsearch.index.analysis;
 
-import net.sourceforge.pinyin4j.PinyinHelper;
-import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
-import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
-import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
-import net.sourceforge.pinyin4j.format.HanyuPinyinVCharType;
-import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
+import com.github.stuxuhai.jpinyin.PinyinFormat;
+import com.github.stuxuhai.jpinyin.PinyinHelper;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.util.CharTokenizer;
 import org.apache.lucene.util.Version;
@@ -19,7 +15,6 @@ public class PinyinAbbreviationsTokenizer extends CharTokenizer {
     private static final int DEFAULT_BUFFER_SIZE = 256;
 
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
-    private HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
     private static Pattern pattern = Pattern.compile("^[\\u4e00-\\u9fa5]$");
 
     public PinyinAbbreviationsTokenizer(Reader reader) {
@@ -27,11 +22,8 @@ public class PinyinAbbreviationsTokenizer extends CharTokenizer {
     }
 
     public PinyinAbbreviationsTokenizer(Reader input, int bufferSize) {
-        super(Version.LUCENE_41,input);
+        super(Version.LATEST,input);
         termAtt.resizeBuffer(bufferSize);
-        format.setCaseType(HanyuPinyinCaseType.LOWERCASE);
-        format.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
-        format.setVCharType(HanyuPinyinVCharType.WITH_V);
     }
 
 
@@ -43,15 +35,11 @@ public class PinyinAbbreviationsTokenizer extends CharTokenizer {
 
   @Override
   protected int normalize(int c) {
-       try {
-                    String[] strs = PinyinHelper.toHanyuPinyinStringArray((char) c, format);
+                    String[] strs = PinyinHelper.convertToPinyinArray((char) c, PinyinFormat.WITHOUT_TONE);
                     if (strs != null) {
                         termAtt.append(strs[0]);
                        return  strs[0].codePointAt(0);
                     }
-                } catch (BadHanyuPinyinOutputFormatCombination badHanyuPinyinOutputFormatCombination) {
-                    badHanyuPinyinOutputFormatCombination.printStackTrace();
-                }
       return c;
   }
 }

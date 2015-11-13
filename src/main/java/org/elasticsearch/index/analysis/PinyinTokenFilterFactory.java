@@ -18,7 +18,7 @@ public class PinyinTokenFilterFactory extends AbstractTokenFilterFactory {
     @Inject public PinyinTokenFilterFactory(Index index, @IndexSettings Settings indexSettings, @Assisted String name, @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
         first_letter = settings.get("first_letter", "none");
-        padding_char = settings.get("padding_char", "");
+        padding_char = settings.get("padding_char", " ");
     }
 
     @Override public TokenStream create(TokenStream tokenStream) {

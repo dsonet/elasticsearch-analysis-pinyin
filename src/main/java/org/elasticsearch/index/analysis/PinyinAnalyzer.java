@@ -20,7 +20,7 @@ public final class PinyinAnalyzer extends Analyzer {
 
     public PinyinAnalyzer(Settings settings) {
         first_letter = settings.get("first_letter", "none");
-        padding_char = settings.get("padding_char", "");
+        padding_char = settings.get("padding_char", " ");
     }
 
     @Override

@@ -17,12 +17,8 @@ package org.elasticsearch.index.analysis;
  * limitations under the License.
  */
 
-import net.sourceforge.pinyin4j.PinyinHelper;
-import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
-import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
-import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
-import net.sourceforge.pinyin4j.format.HanyuPinyinVCharType;
-import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
+import com.github.stuxuhai.jpinyin.PinyinFormat;
+import com.github.stuxuhai.jpinyin.PinyinHelper;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -36,7 +32,6 @@ public class PinyinTokenFilter extends TokenFilter {
 
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
     private OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
-    private HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
     private String padding_char;
     private String first_letter;
     @Override
@@ -44,54 +39,22 @@ public class PinyinTokenFilter extends TokenFilter {
         if (!input.incrementToken()) {
             return false;
         }
-        final char[] buffer = termAtt.buffer();
-        final int bufferLength = termAtt.length();
-        StringBuilder stringBuilder = new StringBuilder();
-        StringBuilder firstLetters = new StringBuilder();
-        for (int i = 0; i < bufferLength; i++) {
-            char c = buffer[i];
-            if (c < 128) {
-                stringBuilder.append(c);
-                firstLetters.append(c);
-            } else {
-                try {
-                    String[] strs = PinyinHelper.toHanyuPinyinStringArray(c, format);
-                    if (strs != null) {
-                        //get first result by default
-                        String first_value = strs[0];
-                        //TODO more than one pinyin
-                        stringBuilder.append(first_value);
-                        if (this.padding_char.length() > 0) {
-                            stringBuilder.append(this.padding_char);
-                        }
-                        firstLetters.append(first_value.charAt(0));
-
-                    }
-                } catch (BadHanyuPinyinOutputFormatCombination badHanyuPinyinOutputFormatCombination) {
-                    badHanyuPinyinOutputFormatCombination.printStackTrace();
-                }
-            }
-        }
-
+        String str = termAtt.toString();
         StringBuilder pinyinStringBuilder = new StringBuilder();
         if (first_letter.equals("prefix")) {
-            pinyinStringBuilder.append(firstLetters.toString());
+            pinyinStringBuilder.append(PinyinHelper.getShortPinyin(str));
             if (this.padding_char.length() > 0) {
                 pinyinStringBuilder.append(this.padding_char); //TODO splitter
             }
-            pinyinStringBuilder.append(stringBuilder.toString());
+            pinyinStringBuilder.append(PinyinHelper.convertToPinyinString(str, this.padding_char, PinyinFormat.WITHOUT_TONE));
         } else if (first_letter.equals("append")) {
-            pinyinStringBuilder.append(stringBuilder.toString());
-            if (this.padding_char.length() > 0) {
-                if (!stringBuilder.toString().endsWith(this.padding_char)) {
+            pinyinStringBuilder.append(PinyinHelper.convertToPinyinString(str, this.padding_char, PinyinFormat.WITHOUT_TONE));
                     pinyinStringBuilder.append(this.padding_char);
-                }
-            }
-            pinyinStringBuilder.append(firstLetters.toString());
+            pinyinStringBuilder.append(PinyinHelper.getShortPinyin(str));
         } else if (first_letter.equals("none")) {
-            pinyinStringBuilder.append(stringBuilder.toString());
+            pinyinStringBuilder.append(PinyinHelper.convertToPinyinString(str, this.padding_char, PinyinFormat.WITHOUT_TONE));
         } else if (first_letter.equals("only")) {
-            pinyinStringBuilder.append(firstLetters.toString());
+            pinyinStringBuilder.append(PinyinHelper.getShortPinyin(str));
         }
         termAtt.setEmpty();
         termAtt.resizeBuffer(pinyinStringBuilder.length());
@@ -104,9 +67,6 @@ public class PinyinTokenFilter extends TokenFilter {
         super(in);
         this.padding_char = padding_char;
         this.first_letter = first_letter;
-        format.setCaseType(HanyuPinyinCaseType.LOWERCASE);
-        format.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
-        format.setVCharType(HanyuPinyinVCharType.WITH_V);
     }
 
     @Override
