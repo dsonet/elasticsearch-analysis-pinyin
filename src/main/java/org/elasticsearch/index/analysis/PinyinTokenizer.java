@@ -26,14 +26,14 @@ public class PinyinTokenizer extends Tokenizer {
     private String padding_char;
     private String first_letter;
 
-    public PinyinTokenizer(Reader reader, String padding_char, String first_letter) {
-        this(reader, DEFAULT_BUFFER_SIZE);
+    public PinyinTokenizer(String padding_char, String first_letter) {
+        this(DEFAULT_BUFFER_SIZE);
         this.padding_char = padding_char;
         this.first_letter = first_letter;
     }
 
-    public PinyinTokenizer(Reader input, int bufferSize) {
-        super(input);
+    public PinyinTokenizer(int bufferSize) {
+        super();
         termAtt.resizeBuffer(bufferSize);
     }
 
@@ -59,11 +59,11 @@ public class PinyinTokenizer extends Tokenizer {
             //let's join them
             if (first_letter.equals("prefix")) {
                 termAtt.append(PinyinHelper.getShortPinyin(str));
-                    termAtt.append(this.padding_char);
+                termAtt.append(this.padding_char);
                 termAtt.append(PinyinHelper.convertToPinyinString(str, this.padding_char, PinyinFormat.WITHOUT_TONE));
             } else if (first_letter.equals("append")) {
                 termAtt.append(PinyinHelper.convertToPinyinString(str, this.padding_char, PinyinFormat.WITHOUT_TONE));
-                        termAtt.append(this.padding_char);
+                termAtt.append(this.padding_char);
                 termAtt.append(PinyinHelper.getShortPinyin(str));
             } else if (first_letter.equals("none")) {
                 termAtt.append(PinyinHelper.convertToPinyinString(str, this.padding_char, PinyinFormat.WITHOUT_TONE));

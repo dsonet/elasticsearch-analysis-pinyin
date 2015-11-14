@@ -5,6 +5,12 @@
         <format>zip</format>
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
+    <files>
+        <file>
+            <source>${project.basedir}/src/main/resources/plugin-descriptor.properties</source>
+            <filtered>true</filtered>
+        </file>
+    </files>
     <dependencySets>
         <dependencySet>
             <outputDirectory>/</outputDirectory>
@@ -12,6 +18,8 @@
             <useTransitiveFiltering>true</useTransitiveFiltering>
             <excludes>
                 <exclude>org.elasticsearch:elasticsearch</exclude>
+                <exclude>org.apache.lucene:lucene-analyzers-common</exclude>
+                <exclude>org.apache.lucene:lucene-core</exclude>
             </excludes>
         </dependencySet>
         <dependencySet>
@@ -19,14 +27,8 @@
             <useProjectArtifact>true</useProjectArtifact>
             <useTransitiveFiltering>true</useTransitiveFiltering>
             <includes>
-                <include>org.apache.lucene:lucene-pinyin</include>
+                <include>com.github.stuxuhai:jpinyin</include>
             </includes>
         </dependencySet>
     </dependencySets>
-   <fileSets>
-        <fileSet>
-            <directory>${basedir}/lib/</directory>
-            <outputDirectory>/</outputDirectory>
-        </fileSet>
-    </fileSets>
 </assembly>

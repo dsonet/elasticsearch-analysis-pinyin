@@ -23,11 +23,11 @@ public class PinyinTokenizerFactory extends AbstractTokenizerFactory {
     }
 
     @Override
-    public Tokenizer create(Reader reader) {
+    public Tokenizer create() {
         if(first_letter.equals("only")){
-            return new PinyinAbbreviationsTokenizer(reader);
+            return new PinyinAbbreviationsTokenizer();
         }else{
-            return new PinyinTokenizer(reader,padding_char,first_letter);
+            return new PinyinTokenizer(padding_char,first_letter);
         }
     }
 }

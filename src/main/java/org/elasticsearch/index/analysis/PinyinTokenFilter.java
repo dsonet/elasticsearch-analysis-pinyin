@@ -22,7 +22,6 @@ import com.github.stuxuhai.jpinyin.PinyinHelper;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 
 import java.io.IOException;
 
@@ -31,7 +30,6 @@ import java.io.IOException;
 public class PinyinTokenFilter extends TokenFilter {
 
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
-    private OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
     private String padding_char;
     private String first_letter;
     @Override
@@ -40,26 +38,26 @@ public class PinyinTokenFilter extends TokenFilter {
             return false;
         }
         String str = termAtt.toString();
-        StringBuilder pinyinStringBuilder = new StringBuilder();
+        StringBuilder pinyin = new StringBuilder();
         if (first_letter.equals("prefix")) {
-            pinyinStringBuilder.append(PinyinHelper.getShortPinyin(str));
+            pinyin.append(PinyinHelper.getShortPinyin(str));
             if (this.padding_char.length() > 0) {
-                pinyinStringBuilder.append(this.padding_char); //TODO splitter
+                pinyin.append(this.padding_char); //TODO splitter
             }
-            pinyinStringBuilder.append(PinyinHelper.convertToPinyinString(str, this.padding_char, PinyinFormat.WITHOUT_TONE));
+            pinyin.append(PinyinHelper.convertToPinyinString(str, this.padding_char, PinyinFormat.WITHOUT_TONE));
         } else if (first_letter.equals("append")) {
-            pinyinStringBuilder.append(PinyinHelper.convertToPinyinString(str, this.padding_char, PinyinFormat.WITHOUT_TONE));
-                    pinyinStringBuilder.append(this.padding_char);
-            pinyinStringBuilder.append(PinyinHelper.getShortPinyin(str));
+            pinyin.append(PinyinHelper.convertToPinyinString(str, this.padding_char, PinyinFormat.WITHOUT_TONE));
+                    pinyin.append(this.padding_char);
+            pinyin.append(PinyinHelper.getShortPinyin(str));
         } else if (first_letter.equals("none")) {
-            pinyinStringBuilder.append(PinyinHelper.convertToPinyinString(str, this.padding_char, PinyinFormat.WITHOUT_TONE));
+            pinyin.append(PinyinHelper.convertToPinyinString(str, this.padding_char, PinyinFormat.WITHOUT_TONE));
         } else if (first_letter.equals("only")) {
-            pinyinStringBuilder.append(PinyinHelper.getShortPinyin(str));
+            pinyin.append(PinyinHelper.getShortPinyin(str));
         }
         termAtt.setEmpty();
-        termAtt.resizeBuffer(pinyinStringBuilder.length());
-        termAtt.append(pinyinStringBuilder);
-        termAtt.setLength(pinyinStringBuilder.length());
+        termAtt.resizeBuffer(pinyin.length());
+        termAtt.append(pinyin);
+        termAtt.setLength(pinyin.length());
         return true;
     }
 

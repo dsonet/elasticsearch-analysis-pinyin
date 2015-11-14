@@ -16,7 +16,7 @@ public class PinyinAbbreviationsTokenizerFactory extends AbstractTokenizerFactor
     }
 
     @Override
-    public Tokenizer create(Reader reader) {
-        return new PinyinAbbreviationsTokenizer(reader);
+    public Tokenizer create() {
+        return new PinyinAbbreviationsTokenizer();
     }
 }
